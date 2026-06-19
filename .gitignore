@@ -1,0 +1,50 @@
+# =======================================================================
+# Python Environment & System Files
+# =======================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+.DS_Store
+Thumbs.db
+
+# =======================================================================
+# Machine Learning & Deep Learning Artifacts (Crucial to ignore!)
+# =======================================================================
+# Ignore all locally downloaded base models and fine-tuned checkpoints
+checkpoint-*/
+results/
+outputs/
+models/
+saved_model/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.gguf
+
+# =======================================================================
+# Hugging Face, PyTorch & Weights & Biases Caches
+# =======================================================================
+.cache/
+.hf_cache/
+.pytest_cache/
+.ipynb_checkpoints/
+wandb/
+tensorboard/
+logs/
+
+# =======================================================================
+# Datasets & Local Data Storage
+# =======================================================================
+# Keeps your downloaded Nvidia Aegis data or custom CSVs localized
+data/
+dataset/
+datasets/
+*.csv
+*.json
+*.jsonl
