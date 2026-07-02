@@ -2,7 +2,7 @@
 
 End-to-end QLoRA fine-tuning pipeline for **binary safety classification** (`Safe` / `Unsafe`) on assistant responses using the **AEGIS Safety Dataset** and **meta-llama/Llama-3.2-3B-Instruct**.
 
-![Build](https://img.shields.io/badge/build-passing-brightgreen) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT-lightgrey) ![Status](https://img.shields.io/badge/status-research--prototype-purple)
+![Build](https://img.shields.io/badge/build-passing-brightgreen) 
 
 ## Project Overview
 
