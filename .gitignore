@@ -1,50 +1,82 @@
-# =======================================================================
-# Python Environment & System Files
-# =======================================================================
+# ----------------------------------------------------------------------
+# OS / Editor
+# ----------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# ----------------------------------------------------------------------
+# Python
+# ----------------------------------------------------------------------
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyo
+*.pyd
+.python-version
 .venv/
 venv/
 ENV/
 env/
-.env
-.DS_Store
-Thumbs.db
 
-# =======================================================================
-# Machine Learning & Deep Learning Artifacts (Crucial to ignore!)
-# =======================================================================
-# Ignore all locally downloaded base models and fine-tuned checkpoints
-checkpoint-*/
-# results
+# ----------------------------------------------------------------------
+# Environment & Secrets
+# ----------------------------------------------------------------------
+.env
+.env.*
+*.key
+*.pem
+
+# ----------------------------------------------------------------------
+# Jupyter
+# ----------------------------------------------------------------------
+.ipynb_checkpoints/
+
+# ----------------------------------------------------------------------
+# Build / Test / Logs
+# ----------------------------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+logs/
+*.log
+
+# ----------------------------------------------------------------------
+# ML Experiment Outputs (generated locally)
+# ----------------------------------------------------------------------
 outputs/
-# models
-saved_model/
+runs/
+wandb/
+tensorboard/
+artifacts/
+binary_final_adapter_weights/
+aegis-llama-safety/
+**/checkpoint-*/
+dataset/**/cache-*.arrow
+dataset/**/state.json
+**/optimizer.pt
+**/scheduler.pt
+**/rng_state.pth
+**/trainer_state.json
+**/training_args.bin
+
+# ----------------------------------------------------------------------
+# Hugging Face / Transformers / Torch caches
+# ----------------------------------------------------------------------
+.cache/
+.hf_cache/
+hf_cache/
+transformers_cache/
+HF_HOME/
+
+# ----------------------------------------------------------------------
+# Large model artifacts
+# Keep tracked project artifacts in /models and /results if intentionally committed.
+# ----------------------------------------------------------------------
+*.gguf
 *.pt
 *.pth
 *.bin
 *.safetensors
-*.gguf
-
-# =======================================================================
-# Hugging Face, PyTorch & Weights & Biases Caches
-# =======================================================================
-.cache/
-.hf_cache/
-.pytest_cache/
-.ipynb_checkpoints/
-wandb/
-tensorboard/
-logs/
-
-# =======================================================================
-# Datasets & Local Data Storage
-# =======================================================================
-# Keeps your downloaded Nvidia Aegis data or custom CSVs localized
-data/
-dataset/
-datasets/
-*.csv
-*.json
-*.jsonl

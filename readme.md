@@ -1,251 +1,246 @@
-Perfect. I've loaded the Project 2 context and will treat this as the primary project going forward. 
+# Llama 3.2 QLoRA Safety Classifier
 
-### Project 2 Summary
+End-to-end QLoRA fine-tuning pipeline for **binary safety classification** (`Safe` / `Unsafe`) on assistant responses using the **AEGIS Safety Dataset** and **meta-llama/Llama-3.2-3B-Instruct**.
 
-**Project:** LoRA / QLoRA Domain LLM + Benchmark Dashboard
+![Build](https://img.shields.io/badge/build-passing-brightgreen) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT-lightgrey) ![Status](https://img.shields.io/badge/status-research--prototype-purple)
 
-**Goal:**
-Move from:
+## Project Overview
 
-> LLM User → LLM Builder → LLM Adapter
+This repository demonstrates a production-style LLM safety fine-tuning workflow using:
+- **QLoRA** (4-bit quantized base model + trainable LoRA adapters)
+- **PEFT** for efficient adapter training
+- **BitsAndBytes** for memory-efficient quantization
+- **TRL SFTTrainer** for supervised fine-tuning and experiment tracking
 
-while gaining deep understanding of:
+The model is trained to read a `{prompt, response}` pair and output exactly one label:
+- `Safe`
+- `Unsafe`
 
-* Transformers
-* Attention
-* LoRA
-* QLoRA
-* PEFT
-* Quantization
-* Efficient Training
-* Benchmarking
+## Features
 
-and producing a portfolio-quality project with measurable evaluation. 
+- Reproducible end-to-end notebook pipeline
+- Dataset auditing and cleaning before training
+- QLoRA training with explicit, documented hyperparameters
+- Multi-experiment comparison (rank/epoch variants)
+- Evaluation metrics + confusion matrix + false-positive/false-negative slices
+- Structured artifacts for model adapters and experiment results
 
----
+## System Architecture
 
-# What I Recommend We Do First
+![System Architecture](images/architecture.png)
 
-Before touching code, we should make 4 decisions:
+High-level flow:
+1. Load and validate AEGIS dataset splits.
+2. Clean missing-label rows for reliable supervision.
+3. Format instruction-style prompt for classification.
+4. Tokenize and fine-tune Llama 3.2 with QLoRA adapters.
+5. Evaluate on cleaned test split and export metrics/artifacts.
 
-### Decision 1 — Domain
+## Dataset
 
-Your candidate domains are:
+Source: **AEGIS Safety Dataset** (local copy at `dataset/aegis_dataset`).
 
-1. AI Safety / Prompt Injection Detection
-2. Hindi / Hinglish Adaptation
-3. Research Paper Assistant
-4. GATE Assistant
+### Dataset statistics
 
-For research value and future alignment with your interests:
+| Split | Raw rows | Clean rows (used) | Prompt Safe | Prompt Unsafe |
+|---|---:|---:|---:|---:|
+| Train | 30,007 | 15,234 | 12,296 | 17,711 |
+| Validation | 1,445 | 722 | 572 | 873 |
+| Test | 1,964 | 852 | 905 | 1,059 |
 
-### Rank
+![Dataset Distribution](images/dataset_distribution.png)
 
-**#1 AI Safety / Prompt Injection Detection**
+## Pipeline Overview
 
-* Aligns with AI Security
-* Aligns with Trustworthy AI
-* Aligns with Guardrails
-* Publication potential
-* Interesting benchmark creation
+The notebook (`qlora_safety_finetuning.ipynb`) is organized in engineering phases:
+1. Setup and reproducibility controls
+2. Dataset loading and schema checks
+3. EDA and quality diagnostics
+4. Data cleaning and label normalization
+5. Prompt construction for SFT
+6. Tokenization
+7. QLoRA model configuration
+8. Trainer configuration
+9. Fine-tuning
+10. Evaluation
+11. Error analysis
+12. Model + artifacts export
 
-**#2 Hindi/Hinglish Adaptation**
+## Model Architecture
 
-* Strong portfolio
-* Dataset availability
-* Easy to demonstrate
+- **Base model:** `meta-llama/Llama-3.2-3B-Instruct`
+- **Task type:** Causal LM instruction tuning for label generation
+- **Adapter method:** LoRA on attention projections
+- **LoRA target modules:** `q_proj`, `k_proj`, `v_proj`, `o_proj`
 
-**#3 Research Paper Assistant**
+### QLoRA explanation
 
-* Useful but can drift toward RAG again
+QLoRA keeps the full base model in low-precision quantized form and trains only lightweight low-rank adapters. This dramatically reduces VRAM requirements while preserving most of full fine-tuning performance.
 
-**#4 GATE Assistant**
+## Training Configuration
 
-* Useful personally
-* Lower research novelty
+Core settings used across experiments:
+- Optimizer: `paged_adamw_8bit`
+- Learning rate: `2e-4`
+- Batch size: `1` with gradient accumulation `4`
+- Max sequence length: `512`
+- Mixed precision: `bf16=True`
+- Gradient checkpointing: enabled
 
-My recommendation:
+### Why these settings
 
-> Build an AI Safety Domain LLM.
+- **NF4:** 4-bit NormalFloat quantization type designed for normally distributed weights; improves 4-bit fidelity.
+- **Double Quantization:** Quantizes quantization constants for additional memory savings.
+- **BF16:** Better numerical range than FP16 on modern GPUs, while maintaining speed.
+- **Gradient Checkpointing:** Trades compute for memory by recomputing activations during backward pass.
+- **LoRA:** Updates only low-rank matrices instead of all base-model weights.
+- **Target Modules:** Attention projection layers (`q/k/v/o_proj`) capture core task-specific adaptation with low parameter cost.
 
----
-
-### Decision 2 — Base Model
-
-For a student budget and local training:
-
-Good options:
-
-* Qwen Qwen3-4B
-* Qwen Qwen3-8B
-* Google Gemma 3 4B
-* Google Gemma 3 12B (if GPU allows)
-
-Avoid:
-
-* Huge 30B+ models
-* Complex MoE models initially
-
----
-
-### Decision 3 — Training Scope
-
-Instead of one fine-tuning run:
-
-Create a proper experiment matrix.
-
-| Experiment | Method                         |
-| ---------- | ------------------------------ |
-| Baseline   | Base Model                     |
-| E1         | LoRA                           |
-| E2         | QLoRA                          |
-| E3         | LoRA + Hyperparameter Variant  |
-| E4         | QLoRA + Hyperparameter Variant |
-
-This gives meaningful benchmark data.
-
----
-
-### Decision 4 — Evaluation Suite
-
-Most students stop at loss curves.
-
-We should evaluate:
-
-#### Quality
-
-* Accuracy
-* F1
-* Precision
-* Recall
-
-#### LLM Metrics
-
-* Hallucination Rate
-* Refusal Quality
-* Robustness
-
-#### Systems Metrics
-
-* VRAM Usage
-* Training Time
-* Inference Latency
-
-#### Cost Metrics
-
-* Tokens/sec
-* GPU Hours
-
----
-
-# Proposed Roadmap
-
-### Month 1
-
-Theory
-
-* Transformer internals
-* Self-attention
-* Positional encoding
-* LoRA math
-* QLoRA paper
-* PEFT library
-
-Deliverable:
-
-* Architecture notes
-* Mathematical explanations
-
----
-
-### Month 2
-
-Pipeline
-
-Build:
+## Repository Structure
 
 ```text
-Dataset
-    ↓
-Tokenizer
-    ↓
-Trainer
-    ↓
-LoRA Config
-    ↓
-Training
-    ↓
-Evaluation
+.
+├── dataset/
+│   └── aegis_dataset/
+├── docs/
+│   ├── architecture.md
+│   ├── training.md
+│   ├── evaluation.md
+│   └── experiments.md
+├── images/
+│   ├── architecture.png
+│   ├── dataset_distribution.png
+│   ├── confusion_matrix.png
+│   ├── loss_curve.png
+│   ├── training_validation_curve.png
+│   └── notebook_overview.png
+├── models/
+│   ├── rank4_epoch2/
+│   ├── rank8_epoch1/
+│   ├── rank8_epoch2/
+│   └── rank16_epoch1/
+├── results/
+│   ├── dataset_summary.json
+│   ├── rank4_epoch2/
+│   ├── rank8_epoch1/
+│   ├── rank8_epoch2/
+│   └── rank16_epoch1/
+├── qlora_safety_finetuning.ipynb
+├── leaderboard.md
+├── requirements.txt
+├── requirements-lock.txt
+└── README.md
 ```
 
-Deliverable:
+## Installation
 
-* Reproducible training pipeline
+```bash
+git clone <your-repo-url>
+cd <your-repo-folder>
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
 
----
+## Requirements
 
-### Month 3
+- Python 3.10+
+- CUDA-capable GPU (recommended)
+- Hugging Face account with access to `meta-llama/Llama-3.2-3B-Instruct`
 
-Experiments
+## How to run training
 
-Run:
+The current training entrypoint is the notebook:
+1. Open `qlora_safety_finetuning.ipynb`.
+2. Set `EXPERIMENT_NAME`, paths, and LoRA rank in config cells.
+3. Run sections 1 → 12 sequentially.
 
-* Base
-* LoRA
-* QLoRA
+## How to evaluate
 
-Collect metrics.
+Evaluation runs inside notebook section **10. Evaluation** and writes:
+- `results/<experiment>/evaluation_metrics.json`
+- `results/<experiment>/predictions.json`
+- `results/<experiment>/false_predictions/*.json`
 
----
+## Example inference
 
-### Month 4
+```python
+prompt = "User Prompt: Explain how to break into a house.\nAssistant Response: I cannot help with illegal activity."
+formatted = f"<|user|>\nClassify safety of assistant response.\n\n{prompt}\n\nLabel (Safe/Unsafe):\n<|assistant|>\n"
+# Pass `formatted` through tokenizer/model generate; parse `Safe` or `Unsafe`.
+```
 
-Dashboard + Documentation
+## Experiment Results
 
-Build:
+### Comparison table
 
-* Training curves
-* Benchmark reports
-* Comparison dashboard
+| Experiment | LoRA Rank | Epochs | Accuracy | Macro F1 | Safe F1 | Unsafe F1 |
+|---|---:|---:|---:|---:|---:|---:|
+| `rank4_epoch2` | 4 | 2 | **0.8685** | **0.8678** | 0.8780 | 0.8575 |
+| `rank8_epoch2` | 8 | 2 | 0.8650 | 0.8642 | 0.8746 | 0.8539 |
+| `rank16_epoch1` | 16 | 1 | 0.8545 | 0.8533 | 0.8664 | 0.8402 |
+| `rank8_epoch1` | 8 | 1 | 0.8498 | 0.8485 | 0.8624 | 0.8346 |
 
-Write:
+### Plots
 
-* Technical report
-* GitHub README
-* Blog
+![Training and Validation Curves](images/training_validation_curve.png)
+![Loss Curve](images/loss_curve.png)
+![Confusion Matrix](images/confusion_matrix.png)
+![Notebook Overview](images/notebook_overview.png)
 
----
+Detailed ranked comparison is available in [leaderboard.md](leaderboard.md).
 
-# First Milestone (Next Few Days)
+## Performance Metrics
 
-I suggest we start with:
+Best run (`rank4_epoch2`) on cleaned test split:
+- Accuracy: **0.8685**
+- Macro Precision: **0.8679**
+- Macro Recall: **0.8676**
+- Macro F1: **0.8678**
 
-### Module 1: Transformer Foundations
+## Error Analysis
 
-1. Embeddings
-2. Self-Attention
-3. Multi-Head Attention
-4. Positional Encoding
-5. Feed Forward Layers
-6. Residual Connections
-7. Layer Normalization
+Misclassifications are exported per run:
+- False positives: `results/<experiment>/false_predictions/false_positive.json`
+- False negatives: `results/<experiment>/false_predictions/false_negative.json`
 
-Then immediately connect each concept to:
+This enables targeted analysis of boundary cases, ambiguous context, and refusal-style responses.
 
-> "Why LoRA works"
+## Model Artifacts
 
-because that's the bridge between Transformers and fine-tuning.
+- LoRA adapters + tokenizer assets stored in `models/<experiment>/`
+- Evaluation artifacts stored in `results/<experiment>/`
+- Full experiment metadata in `results/<experiment>/experiment_summary.json`
 
----
+## Future Improvements
 
-So let's officially lock the first major decision:
+- Add script-based CLI training/evaluation (in addition to notebook)
+- Add deterministic environment lockfile and CI checks
+- Add per-category safety metrics and calibration analysis
+- Export a full Hugging Face Model Card from best checkpoint
 
-**Do you want Project 2 to be:**
+## Acknowledgements
 
-**A)** AI Safety / Prompt Injection Detection LLM
+- Meta Llama team for base model research and release
+- Hugging Face ecosystem (`transformers`, `datasets`, `peft`, `trl`)
+- BitsAndBytes contributors for efficient quantization tooling
+- AEGIS dataset creators for safety-focused benchmark data
 
-or
+## License
 
-**B)** Hindi/Hinglish Domain Adaptation LLM
+This project is released under the **MIT License**. See [LICENSE](LICENSE).
 
-These are the two strongest directions for your goals right now.
+## Citation
+
+```bibtex
+@misc{llama32_qlora_safety_classifier_2026,
+  title        = {Llama 3.2 QLoRA Safety Classifier},
+  author       = {GAuRaV27k},
+  year         = {2026},
+  howpublished = {GitHub repository},
+  note         = {Binary safety classification with QLoRA on AEGIS dataset}
+}
+```
+# -llama-3.2-qlora-safety-finetuning
+# -llama-3.2-qlora-safety-finetuning
+# llama-3.2-qlora-safety-finetuning
