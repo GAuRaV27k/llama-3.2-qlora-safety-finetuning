@@ -17,9 +17,9 @@ Thumbs.db
 # =======================================================================
 # Ignore all locally downloaded base models and fine-tuned checkpoints
 checkpoint-*/
-results/
+# results
 outputs/
-models/
+# models
 saved_model/
 *.pt
 *.pth
