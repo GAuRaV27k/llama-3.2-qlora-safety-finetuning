@@ -4,7 +4,6 @@ End-to-end QLoRA fine-tuning pipeline for **binary safety classification** (`Saf
 
 🤗 **Hugging Face Model**
 [llama-3.2-qlora-safety-classifier](https://huggingface.co/GAuRaV27k/llama-3.2-qlora-safety-classifier)
-![Build](https://img.shields.io/badge/build-passing-brightgreen) 
 
 ## Project Overview
 
