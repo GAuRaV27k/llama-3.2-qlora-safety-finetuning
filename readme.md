@@ -1,7 +1,8 @@
 # Llama 3.2 QLoRA Safety Classifier
 
 End-to-end QLoRA fine-tuning pipeline for **binary safety classification** (`Safe` / `Unsafe`) on assistant responses using the **AEGIS Safety Dataset** and **meta-llama/Llama-3.2-3B-Instruct**.
-
+## 🤗 Hugging Face Model
+https://huggingface.co/GAuRaV27k/llama-3.2-qlora-safety-classifier
 ![Build](https://img.shields.io/badge/build-passing-brightgreen) 
 
 ## Project Overview
