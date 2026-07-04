@@ -2,7 +2,7 @@
 
 End-to-end QLoRA fine-tuning pipeline for **binary safety classification** (`Safe` / `Unsafe`) on assistant responses using the **AEGIS Safety Dataset** and **meta-llama/Llama-3.2-3B-Instruct**.
 
-![Build](https://img.shields.io/badge/build-passing-brightgreen) ![Python](https://img.shields.io/badge/python-3.10%2B-blue) ![License](https://img.shields.io/badge/license-MIT-lightgrey) ![Status](https://img.shields.io/badge/status-research--prototype-purple)
+![Build](https://img.shields.io/badge/build-passing-brightgreen) 
 
 ## Project Overview
 
@@ -184,8 +184,6 @@ formatted = f"<|user|>\nClassify safety of assistant response.\n\n{prompt}\n\nLa
 ### Plots
 
 ![Training and Validation Curves](images/training_validation_curve.png)
-![Loss Curve](images/loss_curve.png)
-![Confusion Matrix](images/confusion_matrix.png)
 ![Notebook Overview](images/notebook_overview.png)
 
 Detailed ranked comparison is available in [leaderboard.md](leaderboard.md).
@@ -241,6 +239,4 @@ This project is released under the **MIT License**. See [LICENSE](LICENSE).
   note         = {Binary safety classification with QLoRA on AEGIS dataset}
 }
 ```
-# -llama-3.2-qlora-safety-finetuning
-# -llama-3.2-qlora-safety-finetuning
-# llama-3.2-qlora-safety-finetuning
+
