@@ -184,8 +184,6 @@ formatted = f"<|user|>\nClassify safety of assistant response.\n\n{prompt}\n\nLa
 ### Plots
 
 ![Training and Validation Curves](images/training_validation_curve.png)
-![Loss Curve](images/loss_curve.png)
-![Confusion Matrix](images/confusion_matrix.png)
 ![Notebook Overview](images/notebook_overview.png)
 
 Detailed ranked comparison is available in [leaderboard.md](leaderboard.md).
