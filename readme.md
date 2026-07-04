@@ -239,6 +239,4 @@ This project is released under the **MIT License**. See [LICENSE](LICENSE).
   note         = {Binary safety classification with QLoRA on AEGIS dataset}
 }
 ```
-# -llama-3.2-qlora-safety-finetuning
-# -llama-3.2-qlora-safety-finetuning
-# llama-3.2-qlora-safety-finetuning
+
