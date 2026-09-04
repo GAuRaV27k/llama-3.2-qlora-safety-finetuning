@@ -1,0 +1,63 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Conda
+miniforge3/
+anaconda3/
+
+# Git
+.git/
+.gitignore
+
+# VS Code
+.vscode/
+
+# Python/Jupyter
+*.ipynb
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.python-version
+.venv/
+venv/
+ENV/
+env/
+
+
+# Project artifacts not needed for serving
+dataset/
+docs/
+images/
+results/
+benchmarks/
+tests/
+
+# Local model files
+models/
+
+# Hugging Face cache
+.cache/
+huggingface_cache/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage*
+htmlcov/
+logs/
+*.log
