@@ -24,7 +24,7 @@ def get_model():
                 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID)
                 base_model = AutoModelForCausalLM.from_pretrained(
                     BASE_MODEL_ID,
-                    dtype=torch.bfloat16,
+                    torch_dtype=torch.bfloat16,
                     device_map="auto",
                 )
                 model = PeftModel.from_pretrained(
