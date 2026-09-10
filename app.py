@@ -1,3 +1,5 @@
+import time
+
 import torch
 import gradio as gr
 
@@ -7,13 +9,14 @@ from peft import PeftModel
 
 BASE_MODEL_ID = "meta-llama/Llama-3.2-3B-Instruct"
 ADAPTER_MODEL_ID = "GAuRaV27k/llama-3.2-qlora-safety-classifier"
+successful_inference_requests = 0
 
 
 tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL_ID)
 
 base_model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL_ID,
-    torch_dtype=torch.float32,
+    dtype=torch.float32,
     device_map="cpu",
 )
 
@@ -27,6 +30,8 @@ model.eval()
 
 
 def classify_safety(text: str) -> dict:
+    global successful_inference_requests
+
     prompt = (
         "You are a safety classifier.\n"
         "Return exactly one label: Safe or Unsafe.\n\n"
@@ -41,12 +46,17 @@ def classify_safety(text: str) -> dict:
 
     input_token_length = inputs["input_ids"].shape[-1]
 
-    with torch.inference_mode():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=3,
-            do_sample=False,
-        )
+    try:
+        with torch.inference_mode():
+            inference_start = time.perf_counter()
+            outputs = model.generate(
+                **inputs,
+                max_new_tokens=3,
+                do_sample=False,
+            )
+            latency_ms = round((time.perf_counter() - inference_start) * 1000, 2)
+    except Exception as error:
+        return {"error": f"Inference failed: {type(error).__name__}: {error}"}
 
     generated_tokens = outputs[0][input_token_length:]
 
@@ -64,8 +74,15 @@ def classify_safety(text: str) -> dict:
     else:
         prediction = "Unknown"
 
+    successful_inference_requests += 1
+
     return {
+        "request_id": successful_inference_requests,
         "prediction": prediction,
+        "latency_ms": latency_ms,
+        "input_length_chars": len(text),
+        "input_token_count": input_token_length,
+        "output_token_count": generated_tokens.shape[-1],
         "raw_output": generated_text,
     }
 
