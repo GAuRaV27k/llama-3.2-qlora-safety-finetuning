@@ -1,0 +1,98 @@
+{
+  "builder_name": "json",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "aegis-ai-content-safety-dataset-2.0",
+  "dataset_size": 20042701,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/nvidia/Aegis-AI-Content-Safety-Dataset-2.0@266af938acb7d7039d5b23b4aa2f5331b6d32fac/train.json": {
+      "num_bytes": 22705956,
+      "checksum": null
+    },
+    "hf://datasets/nvidia/Aegis-AI-Content-Safety-Dataset-2.0@266af938acb7d7039d5b23b4aa2f5331b6d32fac/refusals_train.json": {
+      "num_bytes": 2758729,
+      "checksum": null
+    },
+    "hf://datasets/nvidia/Aegis-AI-Content-Safety-Dataset-2.0@266af938acb7d7039d5b23b4aa2f5331b6d32fac/validation.json": {
+      "num_bytes": 1137821,
+      "checksum": null
+    },
+    "hf://datasets/nvidia/Aegis-AI-Content-Safety-Dataset-2.0@266af938acb7d7039d5b23b4aa2f5331b6d32fac/refusals_validation.json": {
+      "num_bytes": 109404,
+      "checksum": null
+    },
+    "hf://datasets/nvidia/Aegis-AI-Content-Safety-Dataset-2.0@266af938acb7d7039d5b23b4aa2f5331b6d32fac/test.json": {
+      "num_bytes": 1731373,
+      "checksum": null
+    }
+  },
+  "download_size": 28443283,
+  "features": {
+    "id": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "reconstruction_id_if_redacted": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "prompt": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "response": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prompt_label": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "response_label": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "violated_categories": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "prompt_label_source": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "response_label_source": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 48485984,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 17937007,
+      "num_examples": 30007,
+      "dataset_name": "aegis-ai-content-safety-dataset-2.0"
+    },
+    "validation": {
+      "name": "validation",
+      "num_bytes": 884294,
+      "num_examples": 1445,
+      "dataset_name": "aegis-ai-content-safety-dataset-2.0"
+    },
+    "test": {
+      "name": "test",
+      "num_bytes": 1221400,
+      "num_examples": 1964,
+      "dataset_name": "aegis-ai-content-safety-dataset-2.0"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
